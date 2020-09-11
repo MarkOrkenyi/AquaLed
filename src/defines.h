@@ -3,7 +3,7 @@
 #define NIGHT_LIGHT             1
 //#define TESTBUILD               1
 #define NIGHT_LIGHT_MAX_PWM     30
-#define MAX_LED_PWM             550
+#define MAX_LED_PWM             300
 #define START_HOUR              11
 #define START_MIN               30
 #define NIGHT_LIGHT_START_HOUR  16  

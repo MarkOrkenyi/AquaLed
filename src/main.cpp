@@ -36,8 +36,10 @@ void waitIndicator()
   analogWrite(LED_STRIP_0, 0);
 }
 
-void rampUp(unsigned long targetPwm){
-  while(actual_brightness < targetPwm){
+void rampUp(unsigned long targetPwm)
+{
+  while(actual_brightness < targetPwm)
+  {
     actual_brightness += 1;
     analogWrite(LED_STRIP_0, actual_brightness);
     analogWrite(LED_STRIP_1, actual_brightness);
@@ -53,11 +55,12 @@ void rampUp(unsigned long targetPwm){
     Serial.println("brightness: " + (String)actual_brightness);
     #endif
   }
-  FLAG_LED_WORKING = true;
 }
 
-void rampDown(unsigned long targetPwm){
-  while(actual_brightness > targetPwm){
+void rampDown(unsigned long targetPwm)
+{
+  while(actual_brightness > targetPwm)
+  {
     actual_brightness -= 1;
     analogWrite(LED_STRIP_0, actual_brightness);
     analogWrite(LED_STRIP_1, actual_brightness);
@@ -72,14 +75,6 @@ void rampDown(unsigned long targetPwm){
     #ifdef DEBUG
     Serial.println("brightness: " + (String)actual_brightness);
     #endif
-  }
-  if(targetPwm != 0)
-  {
-    FLAG_LED_WORKING = true;
-  }
-  else
-  {
-    FLAG_LED_WORKING = false;
   }
 }
 
@@ -122,22 +117,26 @@ void loop()
     /*If year is 2036, time is invalid, do nothing*/
     if(dateTime.year != 2036)
     {
-      if(!FLAG_LED_WORKING)
+      if(currentTimeInMinutes > startTime && currentTimeInMinutes < nightLightStartTime)
       {
-        if(currentTimeInMinutes > startTime && currentTimeInMinutes < nightLightStartTime)
+        rampUp(MAX_LED_PWM);
+      }
+      #ifdef NIGHT_LIGHT
+      else if (currentTimeInMinutes > nightLightStartTime && currentTimeInMinutes < endTime)
+      {
+        if(actual_brightness < NIGHT_LIGHT_MAX_PWM)
         {
-          rampUp(MAX_LED_PWM);
+          rampUp(NIGHT_LIGHT_MAX_PWM);
         }
-        #ifdef NIGHT_LIGHT
-        else if (currentTimeInMinutes > nightLightStartTime && currentTimeInMinutes < endTime)
+        else
         {
           rampDown(NIGHT_LIGHT_MAX_PWM);
         }
-        #endif
-        else if(currentTimeInMinutes > endTime)
-        { 
-          rampDown(0);
-        }
+      }
+      #endif
+      else if(currentTimeInMinutes > endTime)
+      { 
+        rampDown(0);
       }
     }
   }
